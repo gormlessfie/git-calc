@@ -46,7 +46,17 @@ function operate(operator, values) {
 }
 
 function cutIntoOperateInput() {
+    let result = inputList.reduce((value) => {
+        let index = inputList.indexOf(getCharacter('*'));
+        const operand1 = index - 1;
+        const operand2 = index + 1;
 
+        return value + operate(operand1, operand2);
+    });
+}
+
+function getCharacter(operation) {
+    return operation;
 }
 
 function initialize() {
@@ -156,14 +166,19 @@ function equalButton() {
     inputList.push(+tempValue);
     inputList.push('=');
 
+    (screenDisplay.textContent = '69') ? screenDisplay.textContent = 'Nice' : 
     tempValue = '';
     screenDisplay.textContent = '';
+
+
+    console.log(cutIntoOperateInput());
 
     decButton.addEventListener('click', () => {
         decimalButton(decButton.innerHTML);
     }, once);
 
     updateLog();
+    console.log(tempValue);
 }
 
 function updateLog() {
