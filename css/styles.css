@@ -15,32 +15,48 @@ h2, h3 {
     flex-flow: column;
 
     max-width: 500px;
-    max-height: 300px;
-
-    min-width: 500px;
-    max-height: 300px;
+    padding: 20px;
+    border: 5px solid black;
 
     gap: 30px;
 }
 
-#display-box {
-    background-color: lightblue;
+#buttons-box {
     display: flex;
+    flex-flow: column;
+    padding: 30px;
+    gap: 10px;
+}
+
+#screen {
+    display: flex;
+}
+
+#display-box {
+    display: flex;
+    min-width: 480px;
+    min-height: 4em;
+    padding: 0.5em;
+
+    overflow: hidden;
+    
+    flex-flow: column;
+
+    background-color: lightblue;
     flex-direction: column;
     align-items: flex-end;
 }
 
-#buttons-box {
-
-    display: flex;
-    flex-flow: row wrap;
-    padding: 30px;
+#previous-input {
+    min-height: 1em;
 }
 
 .button {
-
+    flex: 1;
+    min-width: 100px;
+    min-height: 100px;
 }
 
 .button.enlarge {
-    flex: 2;
+    flex: 3;
 }

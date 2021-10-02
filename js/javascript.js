@@ -1,7 +1,8 @@
 let inputList = [];
 let tempValue = '';
-let inputLength = 0;
+
 const screenDisplay = document.querySelector('h2');
+const history = document.querySelector('h3');
 
 function add(numberOne, numberTwo) {
     return numberOne + numberTwo;
@@ -38,8 +39,8 @@ function operate(operator, values) {
     }
 }
 
-function cutIntoOperateInput () {
-    
+function cutIntoOperateInput() {
+
 }
 
 function initialize() {
@@ -84,7 +85,6 @@ function initButtons(buttonType) {
 function numberButton(value) {
     tempValue += value;
     screenDisplay.textContent += value;
-    inputLength++;
 }
 
 function operatorButton(value) {
@@ -94,22 +94,18 @@ function operatorButton(value) {
     switch(value) {
         case '÷':
             inputList.push('/');
-            inputLength++;
             screenDisplay.textContent += '÷';
             break;
         case '×':
             inputList.push('*');
-            inputLength++;
             screenDisplay.textContent += '×';
             break;
         case '+':
             inputList.push('+');
-            inputLength++;
             screenDisplay.textContent += '+';
             break;
         case '-':
             inputList.push('-');
-            inputLength++;
             screenDisplay.textContent += '-';
             break;
     }
@@ -126,24 +122,29 @@ function decimalButton(value) {
 function cancelButton() {
     console.log('Clearing list!');
 
-    for(let i = 0; i < inputList.length; i++ ) {
-        inputList.pop();
-    }
-
+    inputList.length = 0;
     screenDisplay.textContent = '';
-
+    history.textContent = '';
     console.log('list is now: ' + inputList);
 }
 
 function equalButton() {
     inputList.push(+tempValue);
-    tempValue = 0;
-
     inputList.push('=');
-    inputLength++;
-
+    tempValue = 0;
     screenDisplay.textContent = '';
-    console.log('EQUALED!');
+
+
+    updateLog();
+}
+
+function updateLog() {
+    let log = inputList;
+    log = log.reduce((string, current) => {
+        return string + current.toString();
+    });
+
+    history.textContent = log;
 }
 
 initialize();
