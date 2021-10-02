@@ -1,1 +1,1 @@
-# git-calc
+# odin-calc
