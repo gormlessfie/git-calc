@@ -1,8 +1,14 @@
+const once = {
+    once : true
+};
+
 let inputList = [];
 let tempValue = '';
 
 const screenDisplay = document.querySelector('h2');
 const history = document.querySelector('h3');
+const decButton = document.querySelector('.button.decimal');
+const negButton = document.querySelector('.button.negative');
 
 function add(numberOne, numberTwo) {
     return numberOne + numberTwo;
@@ -50,11 +56,14 @@ function initialize() {
     initButtons('.button.negative');
     initButtons('.button.decimal');
     initButtons('.button.equal');
+
+    decButton.addEventListener('click', () => {
+        decimalButton(decButton.innerHTML);
+    }, once);
 }
 
 function initButtons(buttonType) {
     const buttons = document.querySelectorAll(buttonType);
-
     buttons.forEach(button => {
         button.addEventListener('click', e => {
             switch(buttonType) {
@@ -67,17 +76,11 @@ function initButtons(buttonType) {
                 case '.button.cancel':
                     cancelButton();
                     break;
-                case '.button.negative':
-                    negativeButton(button.innerHTML);
-                    break;
-                case '.button.decimal':
-                    decimalButton(button.innerHTML);
-                    break;
                 case '.button.equal':
                     equalButton(button.innerHTML);
                     break;
             }
-            console.log(tempValue);
+            console.log(inputList);
         });
     });
 }
@@ -95,28 +98,45 @@ function operatorButton(value) {
         case '÷':
             inputList.push('/');
             screenDisplay.textContent += '÷';
+
+            decButton.addEventListener('click', () => {
+                decimalButton(decButton.innerHTML);
+            }, once);
             break;
         case '×':
             inputList.push('*');
             screenDisplay.textContent += '×';
+
+            decButton.addEventListener('click', () => {
+                decimalButton(decButton.innerHTML);
+            }, once);
             break;
         case '+':
             inputList.push('+');
             screenDisplay.textContent += '+';
+
+            decButton.addEventListener('click', () => {
+                decimalButton(decButton.innerHTML);
+            }, once);
             break;
         case '-':
             inputList.push('-');
             screenDisplay.textContent += '-';
+
+            decButton.addEventListener('click', () => {
+                decimalButton(decButton.innerHTML);
+            }, once);
             break;
     }
 }
 
 function negativeButton(value) {
-    console.log(inputList);
+    tempValue = value.concat(tempValue);
 }
 
 function decimalButton(value) {
-    inputList.push(value);
+    tempValue += value;
+    screenDisplay.textContent += '.';
 }
 
 function cancelButton() {
@@ -126,14 +146,22 @@ function cancelButton() {
     screenDisplay.textContent = '';
     history.textContent = '';
     console.log('list is now: ' + inputList);
+
+        decButton.addEventListener('click', () => {
+        decimalButton(decButton.innerHTML);
+    }, once);
 }
 
 function equalButton() {
     inputList.push(+tempValue);
     inputList.push('=');
-    tempValue = 0;
+
+    tempValue = '';
     screenDisplay.textContent = '';
 
+    decButton.addEventListener('click', () => {
+        decimalButton(decButton.innerHTML);
+    }, once);
 
     updateLog();
 }
