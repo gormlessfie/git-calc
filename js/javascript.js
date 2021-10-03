@@ -2,74 +2,63 @@ const once = {
     once : true
 };
 
-let inputList = [];
-let tempValue = '';
+let listOfOperations = [];
+let setOfValues = [];
+let screenValue = '';
+let input = '';
+let firstNum = 0;
+
+
 
 const screenDisplay = document.querySelector('h2');
 const history = document.querySelector('h3');
 const decButton = document.querySelector('.button.decimal');
 const negButton = document.querySelector('.button.negative');
 
-function add(numberOne, numberTwo) {
-    return numberOne + numberTwo;
+function add(input, numberTwo) {
+    return input + numberTwo;
 }
 
-function subtract(numberOne, numberTwo) {
-    return numberOne - numberTwo;
+function subtract(input, numberTwo) {
+    return input - numberTwo;
 }
 
-function multiply(numberOne, numberTwo) {
-    return numberOne * numberTwo;
+function multiply(input, numberTwo) {
+    return input * numberTwo;
 }
 
-function divide(numberOne, numberTwo) {
-    if(numberOne == 0 && numberTwo !== 0) {
+function divide(input, numberTwo) {
+    if(input == 0 && numberTwo !== 0) {
         return 0;
-    } else if(Number.isNaN(numberOne / numberTwo)){
-        return alert('Error! Dividing by 0 is not allowed.');
+    } else if(Number.isNaN(input / numberTwo)){
+        return screenDisplay.textContent('NaN NOT ALLOWED');
     } else {
-        return numberOne / numberTwo;
+        return input / numberTwo;
     }
 }
 
-function operate(operator, values) {
+function operate(operator, value) {
     switch (operator) {
         case '*':
-            return multiply(values[0], values[2]);
+            return multiply(firstNum, value);
         case '/':
-            return divide(values[0], values[2]);
+            return divide(firstNum, value);
         case '+':
-            return add(values[0], values[2]);
+            return add(firstNum, value);
         case '-':
-            return subtract(values[0], values[2]);
+            return subtract(firstNum, value);
     }
-}
-
-function cutIntoOperateInput() {
-    let result = inputList.reduce((value) => {
-        let index = inputList.indexOf(getCharacter('*'));
-        const operand1 = index - 1;
-        const operand2 = index + 1;
-
-        return value + operate(operand1, operand2);
-    });
-}
-
-function getCharacter(operation) {
-    return operation;
 }
 
 function initialize() {
     initButtons('.button.number');
     initButtons('.button.operator');
     initButtons('.button.cancel');
-    initButtons('.button.negative');
     initButtons('.button.decimal');
     initButtons('.button.equal');
 
-    decButton.addEventListener('click', () => {
-        decimalButton(decButton.innerHTML);
-    }, once);
+    initDecimalButton();
+    initNegativeButton();
 }
 
 function initButtons(buttonType) {
@@ -90,95 +79,94 @@ function initButtons(buttonType) {
                     equalButton(button.innerHTML);
                     break;
             }
-            console.log(inputList);
         });
     });
 }
 
-function numberButton(value) {
-    tempValue += value;
-    screenDisplay.textContent += value;
-}
-
-function operatorButton(value) {
-    inputList.push(+tempValue);
-    tempValue = 0;
-
-    switch(value) {
-        case '÷':
-            inputList.push('/');
-            screenDisplay.textContent += '÷';
-
-            decButton.addEventListener('click', () => {
-                decimalButton(decButton.innerHTML);
-            }, once);
-            break;
-        case '×':
-            inputList.push('*');
-            screenDisplay.textContent += '×';
-
-            decButton.addEventListener('click', () => {
-                decimalButton(decButton.innerHTML);
-            }, once);
-            break;
-        case '+':
-            inputList.push('+');
-            screenDisplay.textContent += '+';
-
-            decButton.addEventListener('click', () => {
-                decimalButton(decButton.innerHTML);
-            }, once);
-            break;
-        case '-':
-            inputList.push('-');
-            screenDisplay.textContent += '-';
-
-            decButton.addEventListener('click', () => {
-                decimalButton(decButton.innerHTML);
-            }, once);
-            break;
+function createArray(operator, array) {
+    if(!input == 0) {
+        array.push(+input);
+        array.push(operator);
+        firstNum = +input;
+        
+        listOfOperations.push(array);
+        input = '';
     }
 }
 
-function negativeButton(value) {
-    tempValue = value.concat(tempValue);
+function numberButton(value) {
+    input += value;
+
+    updateScreen(value);
+    console.log(input);
+}
+
+function operatorButton(value) {
+    let tempOp = [];
+
+    switch(value) {
+        case '÷':
+            createArray('/', tempOp);
+
+            initDecimalButton();
+            break;
+
+        case '×':
+            createArray('*', tempOp);
+            
+            initDecimalButton();
+            break;
+
+        case '+':
+            createArray('+', tempOp);
+
+            initDecimalButton();
+            break;
+
+        case '-':
+            createArray('-', tempOp);
+            
+            initDecimalButton();
+            break;
+    }
+    updateScreen(value);
+}
+
+function negativeButton() {
+    console.log(setOfValues);
+    console.log(listOfOperations);
+}
+
+function initNegativeButton() {
+    negButton.addEventListener('click', () => {
+        negativeButton();
+    });
 }
 
 function decimalButton(value) {
-    tempValue += value;
-    screenDisplay.textContent += '.';
+    input += value;
+    updateScreen(value);
 }
 
-function cancelButton() {
-    console.log('Clearing list!');
-
-    inputList.length = 0;
-    screenDisplay.textContent = '';
-    history.textContent = '';
-    console.log('list is now: ' + inputList);
-
-        decButton.addEventListener('click', () => {
-        decimalButton(decButton.innerHTML);
-    }, once);
-}
-
-function equalButton() {
-    inputList.push(+tempValue);
-    inputList.push('=');
-
-    (screenDisplay.textContent = '69') ? screenDisplay.textContent = 'Nice' : 
-    tempValue = '';
-    screenDisplay.textContent = '';
-
-
-    console.log(cutIntoOperateInput());
-
+function initDecimalButton() {
     decButton.addEventListener('click', () => {
         decimalButton(decButton.innerHTML);
     }, once);
+}
 
-    updateLog();
-    console.log(tempValue);
+function cancelButton() {
+
+}
+
+function equalButton() {
+    let tempOp = [];
+    createArray('=', tempOp);
+
+    firstNum = listOfOperations[0][0];
+    screenValue = listOfOperations.reduce ((total, current) => {
+        return total + operate(current[0], current[1]);
+    })
+    console.log(screenValue);
 }
 
 function updateLog() {
@@ -188,6 +176,11 @@ function updateLog() {
     });
 
     history.textContent = log;
+}
+
+function updateScreen(value) {
+    screenValue += value;
+    screenDisplay.textContent = screenValue;
 }
 
 initialize();
