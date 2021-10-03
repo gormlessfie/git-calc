@@ -3,10 +3,10 @@ const once = {
 };
 
 let listOfOperations = [];
-let setOfValues = [];
+let adjustedList = [];
 let screenValue = '';
 let input = '';
-let firstNum = 0;
+let pressed = false;
 
 
 
@@ -37,16 +37,16 @@ function divide(input, numberTwo) {
     }
 }
 
-function operate(operator, value) {
-    switch (operator) {
+function operate(arrayWithInfo) {
+    switch (arrayWithInfo[1]) {
         case '*':
-            return multiply(firstNum, value);
+            return multiply(arrayWithInfo[0], arrayWithInfo[2]);
         case '/':
-            return divide(firstNum, value);
+            return divide(arrayWithInfo[0], arrayWithInfo[2]);
         case '+':
-            return add(firstNum, value);
+            return add(arrayWithInfo[0], arrayWithInfo[2]);
         case '-':
-            return subtract(firstNum, value);
+            return subtract(arrayWithInfo[0], arrayWithInfo[2]);
     }
 }
 
@@ -83,61 +83,76 @@ function initButtons(buttonType) {
     });
 }
 
-function createArray(operator, array) {
+function pushArray(operator, array) {
     if(!input == 0) {
         array.push(+input);
         array.push(operator);
-        firstNum = +input;
-        
-        listOfOperations.push(array);
         input = '';
     }
+    console.log(array);
 }
 
 function numberButton(value) {
+    if(screenValue !== input) {
+        screenValue = '';
+        screenDisplay.textContent = screenValue;
+    }
     input += value;
-
     updateScreen(value);
-    console.log(input);
 }
 
 function operatorButton(value) {
-    let tempOp = [];
+    if(!pressed) {
+        perButton(value);
+        updateScreen(value);
+        
+        pressed = true;
+        console.log(pressed);
+    } else {
+        perButton(value);
+        pressed = false;
+        
+        console.log(pressed);
+        adjustedList = listOfOperations.splice(0, listOfOperations.length -1);
+        screenValue = '';
+        screenDisplay.textContent = screenValue;
+        let result = writeValueIntoArray();
+        updateScreen(result);
+        updateScreen(value);
 
+    }
+}
+
+function perButton(value) {
     switch(value) {
         case '÷':
-            createArray('/', tempOp);
-
+            pushArray('/', listOfOperations);
             initDecimalButton();
             break;
 
         case '×':
-            createArray('*', tempOp);
-            
+            pushArray('*', listOfOperations);
             initDecimalButton();
             break;
 
         case '+':
-            createArray('+', tempOp);
-
+            pushArray('+', listOfOperations);
             initDecimalButton();
             break;
 
         case '-':
-            createArray('-', tempOp);
-            
+            pushArray('-', listOfOperations);
             initDecimalButton();
             break;
     }
-    updateScreen(value);
 }
 
 function negativeButton() {
-    console.log(setOfValues);
     console.log(listOfOperations);
 }
 
 function initNegativeButton() {
+    if(negButton.get)
     negButton.addEventListener('click', () => {
         negativeButton();
     });
@@ -155,27 +170,48 @@ function initDecimalButton() {
 }
 
 function cancelButton() {
-
+    clearHistory();
 }
 
 function equalButton() {
-    let tempOp = [];
-    createArray('=', tempOp);
+    console.log(input);
+    pushArray('=', listOfOperations);
+    adjustedList = listOfOperations.splice(0, listOfOperations.length -1);
 
-    firstNum = listOfOperations[0][0];
-    screenValue = listOfOperations.reduce ((total, current) => {
-        return total + operate(current[0], current[1]);
-    })
-    console.log(screenValue);
+    let result = writeValueIntoArray();
+    clearHistory();
+    updateScreen(result);
 }
 
-function updateLog() {
-    let log = inputList;
-    log = log.reduce((string, current) => {
-        return string + current.toString();
-    });
+function clearHistory() {
+    listOfOperations.length = 0;
+    adjustedList.length = 0;
+    screenValue = '';
+    screenDisplay.textContent = screenValue;
+    input = '';
+    pressed = false;
+}
 
-    history.textContent = log;
+function writeValueIntoArray() {
+    let splicedArray = spliceArray(adjustedList, 0);
+    console.log(splicedArray);
+
+    let result = calculateArray(splicedArray);
+    console.log(result);
+
+    adjustedList.splice(0, 0, result);
+
+    listOfOperations.splice(0,0,adjustedList[0]);
+    console.log(adjustedList);
+
+    return result;
+}
+
+function calculateArray(array) {
+    return operate(array);
+}
+function spliceArray(list, index) {
+    return list.splice(index, 3);
 }
 
 function updateScreen(value) {
