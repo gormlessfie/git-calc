@@ -2,13 +2,9 @@ const once = {
     once : true
 };
 
-let listOfOperations = [];
-let adjustedList = [];
+let longList = [];
 let screenValue = '';
 let input = '';
-let pressed = false;
-
-
 
 const screenDisplay = document.querySelector('h2');
 const history = document.querySelector('h3');
@@ -18,15 +14,12 @@ const negButton = document.querySelector('.button.negative');
 function add(input, numberTwo) {
     return input + numberTwo;
 }
-
 function subtract(input, numberTwo) {
     return input - numberTwo;
 }
-
 function multiply(input, numberTwo) {
     return input * numberTwo;
 }
-
 function divide(input, numberTwo) {
     if(input == 0 && numberTwo !== 0) {
         return 0;
@@ -88,57 +81,40 @@ function pushArray(operator, array) {
         array.push(+input);
         array.push(operator);
         input = '';
+    } else {
+        array.push(operator);
     }
-    console.log(array);
 }
 
 function numberButton(value) {
-    if(screenValue !== input) {
-        screenValue = '';
-        screenDisplay.textContent = screenValue;
-    }
     input += value;
     updateScreen(value);
 }
 
 function operatorButton(value) {
-    if(!pressed) {
-        perButton(value);
-        updateScreen(value);
-        pressed = true;
-        console.log(pressed);
-    } else {
-        perButton(value);
-        
-        console.log(pressed);
-        adjustedList = listOfOperations.splice(0, listOfOperations.length -1);
-        screenValue = '';
-        screenDisplay.textContent = screenValue;
-        let result = writeValueIntoArray();
-        updateScreen(result);
-        updateScreen(value);
-
-    }
+    perButton(value);
+    updateScreen(value);
 }
 
 function perButton(value) {
     switch(value) {
         case '÷':
-            pushArray('/', listOfOperations);
+            pushArray('/', longList);
             break;
 
         case '×':
-            pushArray('*', listOfOperations);
+            pushArray('*', longList);
             break;
 
         case '+':
-            pushArray('+', listOfOperations);
+            pushArray('+', longList);
             break;
 
         case '-':
-            pushArray('-', listOfOperations);
+            pushArray('-', longList);
             break;
     }
+    console.log(longList);
 }
 
 function negativeButton(value) {
@@ -181,53 +157,63 @@ function cancelButton() {
 }
 
 function equalButton() {
-    let result;
-    console.log(input);
-    if(!input == ''){
-        pushArray('=', listOfOperations);
-        adjustedList = listOfOperations.splice(0, listOfOperations.length -1);
-        if(adjustedList.length == 1) {
-            result = adjustedList[0];
-        }else {
-        result = writeValueIntoArray();
-        }
+    longList.push(+input);
+    let result = calculateAndReplace(longList)[0];
+    result.toFixed(8);
+    input = '';
 
-        clearHistory();
-        updateScreen(result);
-    } else {
-        console.log('empty!');
+    screenValue = '';
+    screenValue = result;
+    screenDisplay.textContent = screenValue;
+
+    longList.length = 0;
+    longList.push(result);
+}
+
+function calculateAndReplace(listOfOperations) {
+    let exp;
+    let result;
+
+    while(listOfOperations.includes('*')) {
+    exp = listOfOperations.splice(getLocation(listOfOperations, '*'), 3, 'placeholder');
+    result = operate(exp);
+    
+    listOfOperations.splice(listOfOperations.indexOf('placeholder'), 1, result);
     }
+
+    while(listOfOperations.includes('/')) {
+        exp = listOfOperations.splice(getLocation(listOfOperations, '/'), 3, 'placeholder');
+        result = operate(exp);
+        
+        listOfOperations.splice(listOfOperations.indexOf('placeholder'), 1, result);
+    }
+
+    while(listOfOperations.includes('+')) {
+        exp = listOfOperations.splice(getLocation(listOfOperations, '+'), 3, 'placeholder');
+        result = operate(exp);
+        
+        listOfOperations.splice(listOfOperations.indexOf('placeholder'), 1, result);
+    }
+
+    while(listOfOperations.includes('-')) {
+        exp = listOfOperations.splice(getLocation(listOfOperations, '-'), 3, 'placeholder');
+        result = operate(exp);
+        
+        listOfOperations.splice(listOfOperations.indexOf('placeholder'), 1, result);
+    }
+
+    return listOfOperations;
+}
+
+function getLocation(list, operator) {
+    return (list.indexOf(operator) - 1);
 }
 
 function clearHistory() {
-    listOfOperations.length = 0;
-    adjustedList.length = 0;
+    longList.length = 0;
     screenValue = '';
     screenDisplay.textContent = screenValue;
     input = '';
-    pressed = false;
-}
-
-function writeValueIntoArray() {
-    let splicedArray = spliceArray(adjustedList, 0);
-    console.log(splicedArray);
-
-    let result = calculateArray(splicedArray);
-    console.log(result);
-
-    adjustedList.splice(0, 0, result);
-
-    listOfOperations.splice(0,0,adjustedList[0]);
-    console.log(adjustedList);
-
-    return result;
-}
-
-function calculateArray(array) {
-    return operate(array);
-}
-function spliceArray(list, index) {
-    return list.splice(index, 3);
 }
 
 function updateScreen(value) {
