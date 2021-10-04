@@ -127,46 +127,50 @@ function perButton(value) {
     switch(value) {
         case '÷':
             pushArray('/', listOfOperations);
-            initDecimalButton();
             break;
 
         case '×':
             pushArray('*', listOfOperations);
-            initDecimalButton();
             break;
 
         case '+':
             pushArray('+', listOfOperations);
-            initDecimalButton();
             break;
 
         case '-':
             pushArray('-', listOfOperations);
-            initDecimalButton();
             break;
     }
 }
 
-function negativeButton() {
-    console.log(listOfOperations);
+function negativeButton(value) {
+    if(!input.includes('-')) {
+        input = value.concat(input);
+
+        updateScreen(value);
+    } else {
+        input = input.slice(1);
+        screenValue = screenValue.slice(1);
+    }
 }
 
 function initNegativeButton() {
-    if(negButton.get)
     negButton.addEventListener('click', () => {
-        negativeButton();
+        negativeButton('-');
     });
 }
 
 function decimalButton(value) {
-    input += value;
-    updateScreen(value);
+    if(!input.includes('.')) {
+        input += value;
+        updateScreen(value);
+    }
 }
 
 function initDecimalButton() {
     decButton.addEventListener('click', () => {
         decimalButton(decButton.innerHTML);
-    }, once);
+    });
 }
 
 function cancelButton() {
@@ -174,13 +178,22 @@ function cancelButton() {
 }
 
 function equalButton() {
+    let result;
     console.log(input);
-    pushArray('=', listOfOperations);
-    adjustedList = listOfOperations.splice(0, listOfOperations.length -1);
+    if(!input == ''){
+        pushArray('=', listOfOperations);
+        adjustedList = listOfOperations.splice(0, listOfOperations.length -1);
+        if(adjustedList.length == 1) {
+            result = adjustedList[0];
+        }else {
+        result = writeValueIntoArray();
+        }
 
-    let result = writeValueIntoArray();
-    clearHistory();
-    updateScreen(result);
+        clearHistory();
+        updateScreen(result);
+    } else {
+        console.log('empty!');
+    }
 }
 
 function clearHistory() {
@@ -215,8 +228,13 @@ function spliceArray(list, index) {
 }
 
 function updateScreen(value) {
-    screenValue += value;
-    screenDisplay.textContent = screenValue;
+    if(value == '-') {
+        screenValue = value.concat(screenValue);
+        screenDisplay.textContent = screenValue;
+    }else {
+        screenValue += value;
+        screenDisplay.textContent = screenValue;
+    }
 }
 
 initialize();
