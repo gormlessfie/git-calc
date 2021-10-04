@@ -105,12 +105,10 @@ function operatorButton(value) {
     if(!pressed) {
         perButton(value);
         updateScreen(value);
-        
         pressed = true;
         console.log(pressed);
     } else {
         perButton(value);
-        pressed = false;
         
         console.log(pressed);
         adjustedList = listOfOperations.splice(0, listOfOperations.length -1);
@@ -168,7 +166,7 @@ function decimalButton(value) {
         input += value;
         updateScreen(value);
     } else {
-        
+
     }
 }
 
