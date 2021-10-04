@@ -148,9 +148,12 @@ function negativeButton(value) {
         input = value.concat(input);
 
         updateScreen(value);
+
+        console.log(input);
+        console.log(screenValue);
     } else {
         input = input.slice(1);
-        screenValue = screenValue.slice(1);
+        updateScreen(value);
     }
 }
 
@@ -164,6 +167,8 @@ function decimalButton(value) {
     if(!input.includes('.')) {
         input += value;
         updateScreen(value);
+    } else {
+        
     }
 }
 
@@ -229,9 +234,14 @@ function spliceArray(list, index) {
 
 function updateScreen(value) {
     if(value == '-') {
-        screenValue = value.concat(screenValue);
-        screenDisplay.textContent = screenValue;
-    }else {
+        if(screenValue.includes('-')) {
+            screenValue = screenValue.slice(1);
+            screenDisplay.textContent = screenValue;
+        } else {
+            screenValue = value.concat(screenValue);
+            screenDisplay.textContent = screenValue;
+        }
+    } else {
         screenValue += value;
         screenDisplay.textContent = screenValue;
     }
